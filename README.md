@@ -28,6 +28,8 @@ Below are steps you can follow to complete each component of this project.
 4. time - timestamps of records in songplays broken down into specific units
   * start_time, hour, day, week, month, year, weekday
 
+![schema](./Data/Cloud Data Warehouse - Staging to Redshift ERD - Star Schema.png)
+
 2. Write a SQL CREATE statement for each of these tables in sql_queries.py
 3. Complete the logic in create_tables.py to connect to the database and create these tables
 4. Write SQL DROP statements to drop tables in the beginning of create_tables.py if the tables already exist. This way, you can run create_tables.py whenever you want to reset your database and test your ETL pipeline.
