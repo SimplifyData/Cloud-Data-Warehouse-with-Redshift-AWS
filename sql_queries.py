@@ -18,7 +18,8 @@ time_table_drop = "DROP TABLE IF EXISTS dimTime;"
 # CREATE TABLES
 
 staging_events_table_create = ("""
-CREATE IF NOT EXISTS staging_events (
+CREATE TABLE IF NOT EXISTS staging_events (
+event_id INTEGER IDENTITY(0,1),
 artist VARCHAR(50),
 auth VARCHAR(20),
 firstName VARCHAR(25),
@@ -32,11 +33,29 @@ method VARCHAR(15),
 page VARCHAR(15),
 registration FLOAT,
 sessionId INTEGER,
-song 
+song VARCHAR(50),
+status INTEGER,
+ts INTEGER,
+userAgent VARCHAR(200),
+userId INTEGER
+PRIMARY KEY (event_id)
 );
 """)
 
 staging_songs_table_create = ("""
+CREATE TABLE IF NOT EXISTS staging_songs (
+song_id VARCHAR(20),
+title VARCHAR(50),
+duration FLOAT,
+year INTEGER,
+num_songs INTEGER,
+artist_id VARCHAR(20),
+artist_name VARCHAR(50),
+artist_location VARCHAR(50),
+artist_latitude FLOAT,
+artist_longitude FLOAT,
+PRIMARY KEY (song_id)
+);
 """)
 
 songplay_table_create= ("""
