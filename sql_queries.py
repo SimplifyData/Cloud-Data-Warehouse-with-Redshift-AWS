@@ -59,15 +59,49 @@ PRIMARY KEY (song_id)
 """)
 
 songplay_table_create= ("""
+CREATE TABLE IF NOT EXISTS factSongPlays (
+sp_songplay_id INTEGER NOT NULL IDENTITY(0,1),
+sp_start_time TIMESTAMP NOT NULL REFERENCES dimTIME(t_start_time),
+sp_user_id INTEGER NOT NULL REFERENCES dimUsers(u_user_id),
+sp_level VARCHAR(10) NOT NULL REFERENCES dimUsers(u_level),
+sp_song_id VARCHAR(20) NOT NULL REFERENCES dimSongs(s_songs_id),
+sp_artist_id VARCHAR(20) NOT NULL REFERENCES dimArtists(a_artist_id),
+sp_session_id INTEGER NOT NULL SORTKEY,
+sp_location VARCHAR(50) NOT NULL,
+sp_user_agent VARCHAR(200) NOT NULL 
+)
+DISTSTYLE EVEN;
 """)
 
 user_table_create = ("""
+CREATE TABLE IF NOT EXISTS dimUsers (
+u_user_id INTEGER NOT NULL IDENTITY(0,1) SORTKEY,
+u_first_name VARCHAR(25) NOT NULL,
+u_last_name VARCHAR(25) NOT NULL,
+u_gender VARCHAR(10),
+u_level VARCHAR(10)
+) 
+DISTSTYLE ALL;
 """)
 
 song_table_create = ("""
+CREATE TABLE IF NOT EXISTS dimSongs (
+s_song_id VARCHAR(20) NOT NULL,
+s_title VARCHAR(50) NOT NULL,
+s_artist_id VARCHAR(20) NOT NULL SORTKEY,
+s_year INTEGER,
+s_duration INTEGER
+)
+DISTSTYLE ALL;
 """)
 
 artist_table_create = ("""
+CREATE TABLE IF NOT EXISTS dimArtists (
+
+)
+DISTSTYLE ALL;
+
+
 """)
 
 time_table_create = ("""
