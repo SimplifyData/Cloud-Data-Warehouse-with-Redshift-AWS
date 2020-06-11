@@ -7,7 +7,7 @@ config.read('dwh.cfg')
 
 # DROP TABLES
 
-staging_events_table_drop = "DROP TABLE IF EXISTS staging_events_table;"
+staging_events_table_drop = "DROP TABLE IF EXISTS staging_events;"
 staging_songs_table_drop = "DROP TABLE IF EXISTS staging_songs;"
 songplay_table_drop = "DROP TABLE IF EXISTS factSongPlays"
 user_table_drop = "DROP TABLE IF EXISTS dimUsers;"
@@ -97,7 +97,11 @@ DISTSTYLE ALL;
 
 artist_table_create = ("""
 CREATE TABLE IF NOT EXISTS dimArtists (
-
+a_artist_id VARCHAR(20) NOT NULL SORTKEY,
+a_artist_name VARCHAR(50) NOT NULL,
+a_artist_location VARCHAR(50),
+a_artist_latitude FLOAT,
+a_artist_longitude FLOAT
 )
 DISTSTYLE ALL;
 
@@ -105,15 +109,38 @@ DISTSTYLE ALL;
 """)
 
 time_table_create = ("""
+CREATE TABLE IF NOT EXISTS dimTime (
+t_start_time TIMESTAMP NOT NULL SORTKEY,
+t_hour INTEGER NOT NULL,
+t_day INTEGER NOT NULL,
+t_week INTEGER NOT NULL,
+t_month INTEGER NOT NULL,
+t_year INTEGER NOT NULL,
+t_weekday INTEGER NOT NULL 
+)
+DISTSTYLE ALL;
 """)
 
 # STAGING TABLES
 
 staging_events_copy = ("""
-""").format()
+COPY staging_events 
+FROM '{}'
+CREDENTIALS 'aws_iam_role = {}'
+gzip region 'us-west-2'
+FORMAT AS JSON '{}';
+""").format(config.get('S3_PATH','LOG_DATA'),
+            config.get('IAM_ROLE','ARN'),
+            config.get('S3_PATH','LOG_JSON_PATH'))
 
 staging_songs_copy = ("""
-""").format()
+COPY staging_songs
+FROM '{}'
+CREDENTIALS 'aws-iam_role = {}'
+gzip region 'us-west-2'
+JSON 'auto'
+""").format(config.get('S3_PATH','LOG_DATA'),
+            config.get('IAM_ROLE','ARN'))
 
 # FINAL TABLES
 
