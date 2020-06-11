@@ -28,7 +28,7 @@ Below are steps you can follow to complete each component of this project.
 4. time - timestamps of records in songplays broken down into specific units
   * start_time, hour, day, week, month, year, weekday
 
-![schema](./Data/Staging_to_Redshift_ERD_V4.png)
+![schema](./Data/Staging_to_Redshift_ERD_V5.png)
 
 2. Write a SQL CREATE statement for each of these tables in sql_queries.py
 3. Complete the logic in create_tables.py to connect to the database and create these tables
