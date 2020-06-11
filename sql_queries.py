@@ -26,8 +26,8 @@ firstName VARCHAR(25),
 gender VARCHAR(10),
 itemInSession INTEGER,
 lastName VARCHAR(25),
-length FLOAT,
-level VARCHAR(10),
+staging_length FLOAT,
+staging_level VARCHAR(10),
 location VARCHAR(50),
 method VARCHAR(15),
 page VARCHAR(15),
@@ -145,6 +145,45 @@ JSON 'auto'
 # FINAL TABLES
 
 songplay_table_insert = ("""
+INSERT INTO factSongPlays (
+sp_start_time,
+sp_user_id,
+sp_level,
+sp_song_id,
+sp_artist_id,
+sp_session_id,
+sp_location,
+sp_user_agent)
+
+SELECT staging_events.ts as sp_start_time,
+staging_events.userId as sp_user_id,
+staging_events.staging_level as sp_level,
+staging_songs.song_id as sp_song_id,
+staging_songs.artist_id as sp_artist_id,
+staging_events.sessionId as sp_session_id,
+staging_events.location as sp_location,
+staging_events.userAgent as sp_user_agent
+
+FROM staging_events
+LEFT JOIN staging_songs
+ON staging_events.artist = staging_songs.artist_name
+AND staging_events.song = staging_songs.title
+
+LEFT OUTER JOIN factSongPlays
+ON staging_events.userId = factSongPlays.sp_user_id
+AND staging_events.ts = factSongPlays.sp_start_time
+WHERE staging_events.page = 'NextSong'
+AND sp_start_time IS NOT NULL 
+AND sp_user_id IS NOT NULL 
+AND sp_level IS NOT NULL 
+AND sp_song_id IS NOT NULL 
+AND sp_artist_id IS NOT NULL 
+AND sp_session_id IS NOT NULL 
+AND sp_location IS NOT NULL 
+AND sp_user_agent IS NOT NULL 
+AND factSongPlays.songplay_id IS NULL
+ORDER BY sp_start_time DESC, sp_user_id 
+
 """)
 
 user_table_insert = ("""
