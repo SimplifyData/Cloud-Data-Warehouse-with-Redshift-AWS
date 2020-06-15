@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS staging_songs (
 song_id VARCHAR(20),
 title VARCHAR(50),
 duration FLOAT,
-year INTEGER,
+ss_year INTEGER,
 num_songs INTEGER,
 artist_id VARCHAR(20),
 artist_name VARCHAR(50),
@@ -187,15 +187,93 @@ ORDER BY sp_start_time DESC, sp_user_id
 """)
 
 user_table_insert = ("""
+INSERT INTO dimUsers (
+u_user_id,
+u_first_name,
+u_last_name,
+u_gender,
+u_level)
+
+SELECT staging_events.userId as u_user_id,
+staging_events.firstName as u_first_name,
+staging_events.lastName as u_last_name,
+staging_events.gender as u_gender,
+staging_events.level as u_level
+
+FROM staging_events
+LEFT OUTER JOIN dimUsers 
+ON staging_Events.userId = dimUsers.u_user_id
+WHERE staging_events.page = 'NextSong'
+AND u_user_id IS NOT NULL
+AND u_user_id NOT IN dimUsers.u_user_id
+GROUP BY u_user_id
+ORDER BY u_user_id;
 """)
 
 song_table_insert = ("""
+INSERT INTO dimSongs (
+s_song_id,
+s_title,
+s_artist_id,
+s_year,
+s_duration)
+
+
+SELECT DISTINCT staging_songs.song_id as s_song_id,
+staging_songs.title as s_title,
+staging_songs.artist_id as s_artist_id,
+staging_songs.ss_year as s_year,
+staging_songs.duration as s_duration
+
+FROM staging_songs
+WHERE s_song_id IS NOT NULL
 """)
 
 artist_table_insert = ("""
+INSERT INTO dimArtists (
+a_artist_id, 
+a_artist__name , 
+a_artist_location, 
+a_artist_latitude, 
+a_artist_longitude)
+
+SELECT DISTINCT staging_songs.artist_id as a_artist_id,
+staging_songs.artist_name as a_artist_name, 
+staging_songs.artist_location as a_artist_location, 
+staging_songs.artist_latitude as a_artist_latitude, 
+staging_songs.artist_longitude as a_artist_longitude
+
+FROM staging_songs
+WHERE a_artist_id IS NOT NULL
 """)
 
 time_table_insert = ("""
+INSERT INTO dimTime (
+t_start_time, 
+t_hour, 
+t_day, 
+t_week, 
+t_month, 
+t_year, 
+t_weekday)
+
+SELECT t_start_time,
+EXTRACT(hr FROM t_start_time) as t_hour,
+EXTRACT(d from t_start_time) as t_day,
+EXTRACT(w from t_start_time) as t_week,
+EXTRACT(mon from t_start_time) as t_month,
+EXTRACT(yr from t_start_time) as t_year,
+EXTRACT(weekday from t_start_time) as t_weekday
+
+FROM 
+(SELECT DISTINCT TIMESTAMP 'epoch' + ts/1000 * INTERVAL '1 second' as t_start_time
+FROM staging_events s)
+
+LEFT OUTER JOIN dimTime 
+ON t_start_time = dimTime.t_start_time 
+
+WHERE t_start_time NOT NULL 
+AND t_start_time NOT IN dimTime.t_start_time
 """)
 
 # QUERY LISTS
