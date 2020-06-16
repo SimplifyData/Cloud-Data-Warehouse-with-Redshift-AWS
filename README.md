@@ -74,7 +74,9 @@ means its in the main folder:
 * <b> etl.py </b> - Inserts JSON data into the tables in Redshift from S3 t
 * <b> sql_queries.py </b> - SQL statements using Python,  for CREATE, DROP, COPY and INSERT tables
 * <b> dhw.cfg </b> - Info about Redshift, IAM and S3 (hidden)
+_________________________________________________________________
 
+#### References
 
 * https://github.com/FedericoSerini/DEND-Project-3-Data-Warehouse-AWS/
 * https://github.com/janjagusch/dend-03-data-warehouse
