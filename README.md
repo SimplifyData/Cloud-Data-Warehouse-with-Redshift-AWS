@@ -67,7 +67,7 @@ and  insert the commands to run: <br><br>
 
 #### Project structure
 ``/`` <br>
-means its in the mainolder:
+means its in the main folder:
 
 * <b> /Data </b> - Folder to store data and ERD images``md``
 * <b> create_tables.py </b> - drops old tables (if exist) ad creates/recreates new tables
@@ -76,7 +76,7 @@ means its in the mainolder:
 * <b> dhw.cfg </b> - Info about Redshift, IAM and S3 (hidden)
 
 
-https://github.com/FedericoSerini/DEND-Project-3-Data-Warehouse-AWS/
-https://github.com/janjagusch/dend-03-data-warehouse
+* https://github.com/FedericoSerini/DEND-Project-3-Data-Warehouse-AWS/
+* https://github.com/janjagusch/dend-03-data-warehouse
 
 
