@@ -19,7 +19,7 @@ time_table_drop = "DROP TABLE IF EXISTS dimTime;"
 
 staging_events_table_create = ("""
 CREATE TABLE IF NOT EXISTS staging_events (
-event_id INTEGER IDENTITY(0,1),
+event_id INTEGER IDENTITY(0,1) PRIMARY KEY,
 artist VARCHAR(50),
 auth VARCHAR(20),
 firstName VARCHAR(25),
@@ -38,13 +38,12 @@ status INTEGER,
 ts INTEGER,
 userAgent VARCHAR(200),
 userId INTEGER
-PRIMARY KEY (event_id)
 );
 """)
 
 staging_songs_table_create = ("""
 CREATE TABLE IF NOT EXISTS staging_songs (
-song_id VARCHAR(20),
+song_id VARCHAR(20) PRIMARY KEY,
 title VARCHAR(50),
 duration FLOAT,
 ss_year INTEGER,
@@ -53,19 +52,19 @@ artist_id VARCHAR(20),
 artist_name VARCHAR(50),
 artist_location VARCHAR(50),
 artist_latitude FLOAT,
-artist_longitude FLOAT,
-PRIMARY KEY (song_id)
+artist_longitude FLOAT
+
 );
 """)
 
 songplay_table_create= ("""
 CREATE TABLE IF NOT EXISTS factSongPlays (
-sp_songplay_id INTEGER NOT NULL IDENTITY(0,1),
-sp_start_time TIMESTAMP NOT NULL REFERENCES dimTIME(t_start_time),
-sp_user_id INTEGER NOT NULL REFERENCES dimUsers(u_user_id),
-sp_level VARCHAR(10) NOT NULL REFERENCES dimUsers(u_level),
-sp_song_id VARCHAR(20) NOT NULL REFERENCES dimSongs(s_songs_id),
-sp_artist_id VARCHAR(20) NOT NULL REFERENCES dimArtists(a_artist_id),
+sp_songplay_id INTEGER NOT NULL IDENTITY(0,1) PRIMARY KEY,
+sp_start_time TIMESTAMP NOT NULL,
+sp_user_id INTEGER NOT NULL,
+sp_level VARCHAR(10) NOT NULL,
+sp_song_id VARCHAR(20) NOT NULL,
+sp_artist_id VARCHAR(20) NOT NULL,
 sp_session_id INTEGER NOT NULL SORTKEY,
 sp_location VARCHAR(50) NOT NULL,
 sp_user_agent VARCHAR(200) NOT NULL 
@@ -75,7 +74,7 @@ DISTSTYLE EVEN;
 
 user_table_create = ("""
 CREATE TABLE IF NOT EXISTS dimUsers (
-u_user_id INTEGER NOT NULL IDENTITY(0,1) SORTKEY,
+u_user_id INTEGER NOT NULL IDENTITY(0,1) PRIMARY KEY SORTKEY,
 u_first_name VARCHAR(25) NOT NULL,
 u_last_name VARCHAR(25) NOT NULL,
 u_gender VARCHAR(10),
@@ -86,7 +85,7 @@ DISTSTYLE ALL;
 
 song_table_create = ("""
 CREATE TABLE IF NOT EXISTS dimSongs (
-s_song_id VARCHAR(20) NOT NULL,
+s_song_id VARCHAR(20) NOT NULL PRIMARY KEY,
 s_title VARCHAR(50) NOT NULL,
 s_artist_id VARCHAR(20) NOT NULL SORTKEY,
 s_year INTEGER,
@@ -97,7 +96,7 @@ DISTSTYLE ALL;
 
 artist_table_create = ("""
 CREATE TABLE IF NOT EXISTS dimArtists (
-a_artist_id VARCHAR(20) NOT NULL SORTKEY,
+a_artist_id VARCHAR(20) NOT NULL PRIMARY KEY SORTKEY,
 a_artist_name VARCHAR(50) NOT NULL,
 a_artist_location VARCHAR(50),
 a_artist_latitude FLOAT,
@@ -110,7 +109,7 @@ DISTSTYLE ALL;
 
 time_table_create = ("""
 CREATE TABLE IF NOT EXISTS dimTime (
-t_start_time TIMESTAMP NOT NULL SORTKEY,
+t_start_time TIMESTAMP NOT NULL PRIMARY KEY SORTKEY,
 t_hour INTEGER NOT NULL,
 t_day INTEGER NOT NULL,
 t_week INTEGER NOT NULL,
@@ -129,9 +128,9 @@ FROM '{}'
 CREDENTIALS 'aws_iam_role = {}'
 gzip region 'us-west-2'
 FORMAT AS JSON '{}';
-""").format(config.get('S3_PATH','LOG_DATA'),
+""").format(config.get('S3','LOG_DATA'),
             config.get('IAM_ROLE','ARN'),
-            config.get('S3_PATH','LOG_JSON_PATH'))
+            config.get('S3','LOG_JSONPATH'))
 
 staging_songs_copy = ("""
 COPY staging_songs
@@ -139,7 +138,7 @@ FROM '{}'
 CREDENTIALS 'aws-iam_role = {}'
 gzip region 'us-west-2'
 JSON 'auto'
-""").format(config.get('S3_PATH','LOG_DATA'),
+""").format(config.get('S3','SONG_DATA'),
             config.get('IAM_ROLE','ARN'))
 
 # FINAL TABLES
